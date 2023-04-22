@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.Events;
 using TMPro;
 
 public class OptionsMenu : MonoBehaviour
@@ -14,8 +17,15 @@ public class OptionsMenu : MonoBehaviour
     public Slider mainVolumeSlider, musicVolumeSlider, sfxVolumeSlider;
     public TMP_Dropdown qualityDropdown, resolutionDropdown;
     public Toggle fullscreenToggle;
+    public GameObject audioFirstSelected, audioCloseSelected, videoFirstSelected, videoCloseSelected, controlsFirstSelected, controlsCloseSelected;
+
+    public GameObject optionsMenuObject, audioObject, videoObject, controlsObject;
 
     private Resolution[] resolutions;
+    private OptionMenu_SubMenus currentSubMenu = OptionMenu_SubMenus.main;
+    private bool canTakeInput = false;
+
+    public UnityEvent onOptionsClose;
  
     
 
@@ -24,6 +34,103 @@ public class OptionsMenu : MonoBehaviour
         if(shouldSaveAndLoad)LoadOptions();
     }
     
+    public void GoBack(InputAction.CallbackContext context){
+        if(context.phase == InputActionPhase.Performed && canTakeInput){
+            switch (currentSubMenu)
+            {
+                case OptionMenu_SubMenus.main:
+                    CloseOptionsMenu();
+                    break;
+                case OptionMenu_SubMenus.audioMenu:
+                    CloseAudioMenu();
+                    break;
+                case OptionMenu_SubMenus.videoMenu:
+                    CloseVideoMenu();
+                    break;
+                case OptionMenu_SubMenus.controlsMenu:
+                    CloseControlsMenu();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void OpenOptionsMenu(){
+        optionsMenuObject.SetActive(true);
+        canTakeInput = true;
+    }
+
+    public void CloseOptionsMenu(){
+        optionsMenuObject.SetActive(false);
+        canTakeInput = false;
+
+        SaveOptions();
+
+        onOptionsClose.Invoke();
+    }
+
+    public void OpenAudioMenu(){
+        optionsMenuObject.SetActive(false);
+        audioObject.SetActive(true);
+
+        SetSelectedObject(audioFirstSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.audioMenu;
+    }
+
+    public void CloseAudioMenu(){
+        optionsMenuObject.SetActive(true);
+        audioObject.SetActive(false);
+
+        SetSelectedObject(audioCloseSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.main;
+
+        SaveOptions();
+    }
+
+    public void OpenVideoMenu(){
+        optionsMenuObject.SetActive(false);
+        videoObject.SetActive(true);
+
+        SetSelectedObject(videoFirstSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.videoMenu;
+    }
+
+    public void CloseVideoMenu(){
+        optionsMenuObject.SetActive(true);
+        videoObject.SetActive(false);
+
+        SetSelectedObject(videoCloseSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.main;
+
+        SaveOptions();
+    }
+
+    public void OpenControlsMenu(){
+        optionsMenuObject.SetActive(false);
+        controlsObject.SetActive(true);
+
+        SetSelectedObject(controlsFirstSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.controlsMenu;
+    }
+
+    public void CloseControlsMenu(){
+        optionsMenuObject.SetActive(true);
+        controlsObject.SetActive(false);
+
+        SetSelectedObject(controlsCloseSelected);
+    
+        currentSubMenu = OptionMenu_SubMenus.main;
+
+        SaveOptions();
+    }
+
+
     public void SaveOptions(){
         if(shouldSaveAndLoad)PlayerPrefs.Save();
     }
@@ -134,4 +241,11 @@ public class OptionsMenu : MonoBehaviour
         resolutionDropdown.value = currentResolutionsIndex;
         resolutionDropdown.RefreshShownValue();
     }
+
+    private void SetSelectedObject(GameObject selected){
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(selected);
+
+    }
+
 }

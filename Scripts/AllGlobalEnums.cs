@@ -21,3 +21,13 @@ public enum spawnMode
 {
     spawnContinously, spawnSetAmount, spawnOnce
 }
+
+public enum MainMenu_SubMenus
+{
+    main, optionsMenu, creditsMenu, quitMenu
+}
+
+public enum OptionMenu_SubMenus
+{
+    main, audioMenu, videoMenu, controlsMenu
+}
