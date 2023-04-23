@@ -6,7 +6,7 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public TextMeshProUGUI gamePlayScore, endScreenCurrentScore, endScreenHighScore, currentWave;
+    public TextMeshProUGUI gamePlayScore, multiplyer, loseScreenCurrentScore, loseScreenHighScore, winScreenCurrentScore, winScreenHighScore, currentWave;
     public Slider healthBar;
     public GameObject livesHolder;
     public GameObject livesUIPrefab;
@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     private int currentScore, highScore, numberOfLives;
     private int currentHealth = 1;
     private int maxHealth = 1;
+    private int scoreMultiplyer = 1;
 
     public void Start(){
         ResetHealthValues();
@@ -50,6 +51,11 @@ public class UIManager : MonoBehaviour
         DrawHighScore();
     }
 
+    public void SetMultiplier(int multiplyer){
+        scoreMultiplyer = multiplyer;
+        DrawScoreMultiplyer();
+    }
+    
     public void SetLives(int lives){
         numberOfLives = lives;
         DrawLives();
@@ -81,6 +87,11 @@ public class UIManager : MonoBehaviour
         DrawHighScore();
     }
 
+    public void UpdateScoreMultiplyer(int changeToMultiplyer){
+        scoreMultiplyer += changeToMultiplyer;
+        DrawScoreMultiplyer();
+    }
+
     public void UpdateLives(int changeToLives){
         numberOfLives += changeToLives;
         DrawLives();
@@ -99,13 +110,19 @@ public class UIManager : MonoBehaviour
     // Draw ==========================
     private void DrawCurrentScore(){
         gamePlayScore.text = "" + currentScore;
-        endScreenCurrentScore.text = "" + currentScore;
+        loseScreenCurrentScore.text = "SCORE: " + currentScore;
+        winScreenCurrentScore.text = "SCORE: " + currentScore;
     }
 
     private void DrawHighScore(){
-        endScreenHighScore.text = "" + highScore;
+        loseScreenHighScore.text = "HIGH SCORE: " + highScore;
+        winScreenHighScore.text = "HIGH SCORE: " + highScore;
     }
     
+    private void DrawScoreMultiplyer(){
+        multiplyer.text = "x" + scoreMultiplyer;
+    }
+
     private void DrawLives(){
         foreach (Transform child in livesHolder.transform)
         {

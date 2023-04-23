@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6076751871535190286}
   - component: {fileID: 6076751871535190287}
   - component: {fileID: 6076751871535190284}
+  - component: {fileID: 2062421946194249986}
   m_Layer: 0
   m_Name: Mouth_Enemy
   m_TagString: Enemy
@@ -131,7 +132,19 @@ MonoBehaviour:
   destroyOnDeath: 1
   onDeath:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2062421946194249986}
+        m_TargetAssemblyTypeName: ScoreAdjuster, Assembly-CSharp
+        m_MethodName: IncreaseScore
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 10
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onCurrentHealthChange:
     m_PersistentCalls:
       m_Calls: []
@@ -216,3 +229,15 @@ MonoBehaviour:
     damageMode: 0
     damageRate: 0.25
   destroySelfOnTouch: 0
+--- !u!114 &2062421946194249986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6076751871535190276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26a81914a20511541a14e0f276c74e5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
