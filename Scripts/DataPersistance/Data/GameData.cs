@@ -13,5 +13,12 @@ public class GameData
     // the game starts with when there's no data to load
     public GameData(){
         levelHighScores = new SerializableDictionary<string, int>();
+        // TODO - save levels beaten and collectable unlocked
+    }
+
+    public int GetPerentageComplete(){
+        // TODO - figure out how many level's we've finished
+        // for now we will return a test value
+        return 96;
     }
 }

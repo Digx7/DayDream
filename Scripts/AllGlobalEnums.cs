@@ -24,7 +24,7 @@ public enum spawnMode
 
 public enum MainMenu_SubMenus
 {
-    main, optionsMenu, creditsMenu, quitMenu
+    main, saveSlotsMenu, optionsMenu, creditsMenu, quitMenu
 }
 
 public enum OptionMenu_SubMenus

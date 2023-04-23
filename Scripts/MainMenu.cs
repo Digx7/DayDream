@@ -9,17 +9,35 @@ using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
+    
+    public static MainMenu instance {get; private set;}
+    
     // References
+    [Header("Buttons")]
     public Button continueButton;
-    public TextMeshProUGUI buildInfoText;
-    public GameObject optionsFirstSelected, optionsCloseSelected, creditsFirstSelected, creditsCloseSelected, quitFirstSelected, quitCloseSelected;
+    public GameObject saveSlotsFirstSelected, saveSlotsCloseSelected, optionsFirstSelected, optionsCloseSelected, creditsFirstSelected, creditsCloseSelected, quitFirstSelected, quitCloseSelected;
 
-    public GameObject mainMenuObject, creditsObject, quitObject;
+    public SaveSlot[] saveSlots;
+
+    [Header("Menus")]
     public OptionsMenu optionsMenu;
+    public GameObject mainMenuObject, saveSlotsMenu, creditsObject, quitObject;
+
+    [Header("Texts")]
+    public TextMeshProUGUI buildInfoText;
 
     private MainMenu_SubMenus currentSubMenu = MainMenu_SubMenus.main;
 
     private bool canTakeInput = true;
+
+    // Awake and Start
+    private void Awake(){
+        if (instance != null){
+            Debug.LogError("Found more than one Main Menu in the scene!");
+            return;
+        }
+        instance = this;
+    }
 
     private void Start(){
         if (!DataPersistanceManager.instance.HasGameData()){
@@ -27,6 +45,7 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    // Menu Options
     public void NewGame(){
         // create a new game - which will initialize our game data
         DataPersistanceManager.instance.NewGame();
@@ -41,26 +60,25 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadSceneAsync("SampleScene");
     }
 
-    public void GoBack(InputAction.CallbackContext context){
-        if(context.phase == InputActionPhase.Performed && canTakeInput){
-            switch (currentSubMenu)
-            {
-                case MainMenu_SubMenus.main:
-                    OpenQuitMenu();
-                    break;
-                case MainMenu_SubMenus.optionsMenu:
-                    CloseOptionsMenu();
-                    break;
-                case MainMenu_SubMenus.creditsMenu:
-                    CloseCreditsMenu();
-                    break;
-                case MainMenu_SubMenus.quitMenu:
-                    CloseQuitMenu();
-                    break;
-                default:
-                    break;
-            }
-        }
+    public void LoadGame(){
+        OpenSaveSlotsMenu();
+    }
+
+    public void OpenSaveSlotsMenu(){
+        SetUpSaveSlotsMenu();
+        mainMenuObject.SetActive(false);
+        saveSlotsMenu.SetActive(true);
+
+        SetSelectedObject(saveSlotsFirstSelected);
+        currentSubMenu = MainMenu_SubMenus.saveSlotsMenu;
+    }
+
+    public void CloseSaveSlotsMenu(){
+        mainMenuObject.SetActive(true);
+        saveSlotsMenu.SetActive(false);
+
+        SetSelectedObject(saveSlotsCloseSelected);
+        currentSubMenu = MainMenu_SubMenus.main;
     }
 
     public void OpenOptionsMenu(){
@@ -114,6 +132,42 @@ public class MainMenu : MonoBehaviour
         currentSubMenu = MainMenu_SubMenus.main;
     }
     
+     public void GoBack(InputAction.CallbackContext context){
+        if(context.phase == InputActionPhase.Performed && canTakeInput){
+            switch (currentSubMenu)
+            {
+                case MainMenu_SubMenus.main:
+                    OpenQuitMenu();
+                    break;
+                case MainMenu_SubMenus.saveSlotsMenu:
+                    CloseSaveSlotsMenu();
+                    break;
+                case MainMenu_SubMenus.optionsMenu:
+                    CloseOptionsMenu();
+                    break;
+                case MainMenu_SubMenus.creditsMenu:
+                    CloseCreditsMenu();
+                    break;
+                case MainMenu_SubMenus.quitMenu:
+                    CloseQuitMenu();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void SetUpSaveSlotsMenu(){
+        // Load all of the profiles that exist
+        Dictionary<string, GameData> profilesGameData = DataPersistanceManager.instance.GetAllProfilesGameData();
+
+        // Loop through each save slot in the UI and set the content appropriately
+        foreach (SaveSlot saveSlot in saveSlots){
+            GameData profileData = null;
+            profilesGameData.TryGetValue(saveSlot.GetProfileId(), out profileData);
+            saveSlot.SetData(profileData);
+        }
+    }
 
     private void SetUpBuildInfoText(){
         buildInfoText.text = Application.version;
