@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
     // References
     [Header("Buttons")]
     public Button continueButton;
+    public Button loadGameButton;
     public GameObject saveSlotsFirstSelected, saveSlotsCloseSelected, optionsFirstSelected, optionsCloseSelected, creditsFirstSelected, creditsCloseSelected, quitFirstSelected, quitCloseSelected;
 
     public SaveSlot[] saveSlots;
@@ -30,6 +31,8 @@ public class MainMenu : MonoBehaviour
 
     private bool canTakeInput = true;
 
+    private bool isLoadingGame = false;
+
     // Awake and Start
     private void Awake(){
         if (instance != null){
@@ -42,16 +45,13 @@ public class MainMenu : MonoBehaviour
     private void Start(){
         if (!DataPersistanceManager.instance.HasGameData()){
             continueButton.interactable = false;
+            loadGameButton.interactable = false;
         }
     }
 
     // Menu Options
     public void NewGame(){
-        // create a new game - which will initialize our game data
-        DataPersistanceManager.instance.NewGame();
-        // load the gamplay scene  - which will in turn save the game because of
-        // OnSceneUnloaded() in the DataPersistanceManager
-        SceneManager.LoadSceneAsync("SampleScene");
+        OpenSaveSlotsMenu(false);
     }
 
     public void ContinueGame(){
@@ -61,13 +61,15 @@ public class MainMenu : MonoBehaviour
     }
 
     public void LoadGame(){
-        OpenSaveSlotsMenu();
+        OpenSaveSlotsMenu(true);
     }
 
-    public void OpenSaveSlotsMenu(){
-        SetUpSaveSlotsMenu();
+    public void OpenSaveSlotsMenu(bool isLoadingGame = false){
+        this.isLoadingGame = isLoadingGame;
         mainMenuObject.SetActive(false);
         saveSlotsMenu.SetActive(true);
+
+        SetUpSaveSlotsMenu();
 
         SetSelectedObject(saveSlotsFirstSelected);
         currentSubMenu = MainMenu_SubMenus.saveSlotsMenu;
@@ -157,15 +159,36 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void OnSaveSlotClicked(SaveSlot saveSlot){
+        // update the selected profile id to be used for data persistence
+        DataPersistanceManager.instance.ChangeSelectedProfileId(saveSlot.GetProfileId());
+
+        if (!isLoadingGame)
+        { 
+            // create a new game - which will initialize our data to a clean slate
+            DataPersistanceManager.instance.NewGame();
+        }
+
+        // Load the scene - which will in turn save the game because of OnSceneUnloaded() in the DataPersistenceManager
+        SceneManager.LoadSceneAsync("SampleScene");
+    }
     private void SetUpSaveSlotsMenu(){
         // Load all of the profiles that exist
         Dictionary<string, GameData> profilesGameData = DataPersistanceManager.instance.GetAllProfilesGameData();
 
         // Loop through each save slot in the UI and set the content appropriately
+        GameObject firstSelected = saveSlotsFirstSelected;
         foreach (SaveSlot saveSlot in saveSlots){
             GameData profileData = null;
             profilesGameData.TryGetValue(saveSlot.GetProfileId(), out profileData);
             saveSlot.SetData(profileData);
+            if(profileData == null && isLoadingGame){
+                saveSlot.SetInteractable(false);
+            }
+            else{
+                saveSlot.SetInteractable(true);
+                SetSelectedObject(saveSlot.gameObject);
+            }
         }
     }
 
