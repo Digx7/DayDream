@@ -31,7 +31,7 @@ public class SaveSlot : MonoBehaviour
             noDataContent.SetActive(false);
             hasDataContent.SetActive(true);
 
-            percentageCompleteText.text = data.GetPerentageComplete() + "% COMPLETE";
+            percentageCompleteText.text = data.GetNumberOfLevelsBeaten() + "/" + data.GetNumberOfTotalLevels() + " Day Dreams";
         }
     }
 

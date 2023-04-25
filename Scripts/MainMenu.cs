@@ -57,7 +57,7 @@ public class MainMenu : MonoBehaviour
     public void ContinueGame(){
         // Load the next scene - which will in turn load the game because of 
         // OnSceneLoaded() in the DataPersistanceManger
-        SceneManager.LoadSceneAsync("SampleScene");
+        SceneManager.LoadSceneAsync("LevelSelect");
     }
 
     public void LoadGame(){
@@ -170,7 +170,7 @@ public class MainMenu : MonoBehaviour
         }
 
         // Load the scene - which will in turn save the game because of OnSceneUnloaded() in the DataPersistenceManager
-        SceneManager.LoadSceneAsync("SampleScene");
+        SceneManager.LoadSceneAsync("LevelSelect");
     }
     private void SetUpSaveSlotsMenu(){
         // Load all of the profiles that exist

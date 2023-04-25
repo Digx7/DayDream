@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 6282625469686891534}
   - component: {fileID: 3763191889507453247}
   m_Layer: 5
-  m_Name: Percentage Complete (tmp)
+  m_Name: Number Of Levels Beaten (tmp)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 15% COMPLETE
+  m_text: 0/10 Day Dreams
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cafafb8ee2ba9b444aa4fb65a0831482, type: 2}
   m_sharedMaterial: {fileID: 3178576386874343189, guid: cafafb8ee2ba9b444aa4fb65a0831482, type: 2}
