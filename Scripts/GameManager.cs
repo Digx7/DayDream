@@ -6,29 +6,37 @@ using UnityEngine.Events;
 public class GameManager : MonoBehaviour, IDataPersistance
 {
     // Variables
+    public static GameManager instance {get; private set;}
     [SerializeField] private string levelId;
+    [SerializeField] private string nextLevelId = null;
 
     [ContextMenu("Generate guid for level id")]
     private void GenerateGuid(){
         levelId = System.Guid.NewGuid().ToString();
     }
 
+    [SerializeField] private bool levelHasBeenBeaten = false;
     public int score {get; private set;}
-    private int highScore;
+    [SerializeField] private int highScore;
     public int scoreMultiplyer {get; private set;}
     public int currentWave {get; private set;}
     public GamePlayState currentGamePlayState;
-
-    // References
-    public PlayerManager playerManager;
 
     // Events
     public UnityEvent OnIntroStart, OnMainGamePlayStart, OnGameOverScreenStart, OnGameWinScreenStart;
     public UnityEvent<int> OnNextWave, OnScoreUpdate, OnScoreMultiplierUpdate, OnHighScoreUpdate;
 
     // Start, Awake, and Update Methods
-    public void Awake(){
-        playerManager.OnGameOver.AddListener(StartGameOverScreen);
+    public void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("Multiple GameManagers found in this scene.  There should only be one.");
+        }
+        instance = this;
+
+
+        PlayerManager.instance.OnGameOver.AddListener(StartGameOverScreen);
         ResetScoreMultiplier();
     }
     
@@ -38,16 +46,66 @@ public class GameManager : MonoBehaviour, IDataPersistance
     }
 
     // IDataPersistance Methods
-    public void LoadData(GameData data){
-        data.levelHighScores.TryGetValue(levelId, out highScore);
-        OnHighScoreUpdate.Invoke(highScore);
+    public void LoadData(GameData data)
+    {
+        // We check if the key already exits
+        // If yes then we just load the value at that key
+        if (data.levelHighScores.ContainsKey(levelId))
+        {
+            highScore = data.levelHighScores[levelId];
+        }
+        // If no then we load default values
+        else
+        {
+            highScore = 0;
+        }
+
+        if (data.levelsBeaten.ContainsKey(levelId))
+        {
+            levelHasBeenBeaten = data.levelsBeaten[levelId];
+        }
+        else
+        {
+            levelHasBeenBeaten = false;
+        }
     }
 
-    public void SaveData(ref GameData data){
-        if (data.levelHighScores.ContainsKey(levelId)){
-            data.levelHighScores.Remove(levelId);
+    public void SaveData(ref GameData data)
+    {
+        // We check if the key already exist
+        // If yes then we just update the value at that key
+        if (data.levelHighScores.ContainsKey(levelId))
+        {
+            data.levelHighScores[levelId] = highScore;
         }
-        data.levelHighScores.Add(levelId, highScore);
+        // If no then we add that key value pair
+        else
+        {
+            data.levelHighScores.Add(levelId, highScore);
+        }
+
+        // saves weather or not this level has been beaten
+        if (data.levelsBeaten.ContainsKey(levelId))
+        {
+            data.levelsBeaten[levelId] = levelHasBeenBeaten;
+        }
+        else
+        {
+            data.levelsBeaten.Add(levelId, levelHasBeenBeaten);
+        }
+
+        // saves weather or not the next level has been unlocked
+        if (levelHasBeenBeaten && nextLevelId != null)
+        {
+            if (data.levelsUnlocked.ContainsKey(nextLevelId))
+            {
+                data.levelsUnlocked[nextLevelId] = true;
+            }
+            else
+            {
+                data.levelsUnlocked.Add(nextLevelId, true);
+            }
+        }
     }
 
     // Score Methods
@@ -120,6 +178,8 @@ public class GameManager : MonoBehaviour, IDataPersistance
             case GamePlayState.gameWinScreen:
                 OnGameWinScreenStart.Invoke();
                 SetHighScore();
+                levelHasBeenBeaten = true;
+                DataPersistanceManager.instance.SaveGame();
                 break;
             default:
                 break;
@@ -127,7 +187,7 @@ public class GameManager : MonoBehaviour, IDataPersistance
     }
 
     private void _OnMainGamePlayStart(){
-        playerManager.OnGameStart();
+        PlayerManager.instance.OnGameStart();
         OnMainGamePlayStart.Invoke();
     }
 

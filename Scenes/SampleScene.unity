@@ -1311,7 +1311,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7588905132482332628, guid: 549545200d5e0a941a1198de26640e42, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: SampleScene
+      value: LevelSelect
       objectReference: {fileID: 0}
     - target: {fileID: 7588905132482332628, guid: 549545200d5e0a941a1198de26640e42, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -3792,8 +3792,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelId: Level 1
+  nextLevelId: Level 2
+  levelHasBeenBeaten: 0
+  highScore: 0
   currentGamePlayState: 0
-  playerManager: {fileID: 525032623}
   OnIntroStart:
     m_PersistentCalls:
       m_Calls:

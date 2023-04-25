@@ -6,12 +6,26 @@ using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
+    public static PlayerManager instance {get; private set;}
+    public static GameObject player { get; private set;}
+    
+    [Header("Player Variables")]
     public int lives;
     public Spawn playerSpawnPoint;
-    public GameObject player { get; private set;}
 
-    public UnityEvent OnGameOver, OnPlayerDeath, OnPlayerRespawn;
+    [Header("Events")]
+    public UnityEvent OnGameOver; 
+    public UnityEvent OnPlayerDeath, OnPlayerRespawn;
     public UnityEvent<int> OnLivesChange, OnCurrentHealthChange, OnMaxHealthChange;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("Multiple PlayerManager's found in this scene.  There should only be one.");
+        }
+        instance = this;
+    }
 
     //Lives methods
     public void GainLife(){

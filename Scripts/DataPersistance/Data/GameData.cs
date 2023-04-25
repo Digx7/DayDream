@@ -42,7 +42,7 @@ public class GameData
     public int GetNumberOfTotalLevels()
     {
         int numberOfTotalLevels = 0;
-        foreach (KeyValuePair<string, bool> level in levelsBeaten)
+        foreach (KeyValuePair<string, bool> level in levelsUnlocked)
         {
             numberOfTotalLevels++;
         }

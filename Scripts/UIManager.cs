@@ -6,7 +6,11 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager instance {get; private set;}
+
+    [Header("Text objects")]
     public TextMeshProUGUI gamePlayScore, multiplyer, loseScreenCurrentScore, loseScreenHighScore, winScreenCurrentScore, winScreenHighScore, currentWave;
+    [Header("Other UI Elements")]
     public Slider healthBar;
     public GameObject livesHolder;
     public GameObject livesUIPrefab;
@@ -15,6 +19,14 @@ public class UIManager : MonoBehaviour
     private int currentHealth = 1;
     private int maxHealth = 1;
     private int scoreMultiplyer = 1;
+
+    private void Awake(){
+        if (instance != null)
+        {
+            Debug.LogWarning("Multiple UIManager's found in this scene.  There should only be one.");
+        }
+        instance = this;
+    }
 
     public void Start(){
         ResetHealthValues();
